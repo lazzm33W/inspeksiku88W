@@ -1,0 +1,120 @@
+// Version: 4.0.0
+type AccessControlState__201339279 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__230067015<Principal, UserRole__91647283>
+  };
+type Data__44217153<K, V> = {var count : Nat__227979830; kvs : [var ?(K, V)]};
+type ExternalBlob__220559234 = Blob;
+type InspectionItem__363622624 =
+  {
+    category : Text;
+    id : Nat;
+    name : Text;
+    note : Text;
+    part : ?PartInfo__46273692;
+    status : ItemStatus__373732843
+  };
+type InspectionItem__478494293 =
+  {
+    category : Text;
+    id : ItemId__833640393;
+    name : Text;
+    note : Text;
+    part : ?PartInfo__614294954;
+    status : ItemStatus__226049467
+  };
+type Internal__283199666<K, V> =
+  {children : [var ?Node__204828119<K, V>]; data : Data__44217153<K, V>};
+type ItemId__833640393 = Nat;
+type ItemStatus__226049467 = {#attention; #ok; #replace};
+type ItemStatus__373732843 = {#attention; #ok; #replace};
+type Leaf__598469445<K, V> = {data : Data__44217153<K, V>};
+type Map__230067015<K, V> = Map__405889023<K, V>;
+type Map__405889023<K, V> = Map__603270868<K, V>;
+type Map__603270868<K, V> =
+  {var root : Node__204828119<K, V>; var size : Nat__227979830};
+type Nat__227979830 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__248761742 =
+  {
+    accessControlState : AccessControlState__201339279;
+    owners : Map__230067015<Nat, (Nat, Nat)>;
+    photos : Map__230067015<Nat, Photo__1035099810>;
+    reports : Map__230067015<Nat, Report__310501903>;
+    state :
+      {var nextItemId : Nat; var nextPhotoId : Nat; var nextReportId : Nat}
+  };
+type Node__204828119<K, V> =
+  {#internal : Internal__283199666<K, V>; #leaf : Leaf__598469445<K, V>};
+type OldActor__268017246 = {};
+type PartAvailability__12825443 = {#available; #order; #unavailable};
+type PartAvailability__538456042 = {#available; #order; #unavailable};
+type PartInfo__46273692 =
+  {availability : PartAvailability__12825443; name : Text; price : Nat};
+type PartInfo__614294954 =
+  {availability : PartAvailability__538456042; name : Text; price : Nat};
+type PhotoId__38188305 = Nat;
+type Photo__1035099810 =
+  {blob : Blob; filename : Text; id : Nat; mimeType : Text};
+type Photo__977867310 =
+  {
+    blob : ExternalBlob__220559234;
+    filename : Text;
+    id : PhotoId__38188305;
+    mimeType : Text
+  };
+type ReportId__327116113 = Nat;
+type Report__310501903 =
+  {
+    createdAt : Int;
+    id : Nat;
+    inspectionDate : Text;
+    items : [InspectionItem__363622624];
+    plateNumber : Text;
+    updatedAt : Int;
+    vehicleName : Text;
+    year : Nat
+  };
+type Report__953667835 =
+  {
+    createdAt : Timestamp__301639476;
+    id : ReportId__327116113;
+    inspectionDate : Text;
+    items : [InspectionItem__478494293];
+    plateNumber : Text;
+    updatedAt : Timestamp__301639476;
+    vehicleName : Text;
+    year : Nat
+  };
+type Timestamp__301639476 = Int;
+type UserRole__91647283 = {#admin; #guest; #user};
+{
+  "20260920_000000" : (_old : OldActor__268017246) -> NewActor__248761742
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__230067015<Principal, UserRole__91647283>
+    };
+  stable owners :
+    {
+      var root :
+        Node__204828119<PhotoId__38188305,
+                         (ReportId__327116113, ItemId__833640393)>;
+      var size : Nat__227979830
+    };
+  stable photos :
+    {
+      var root : Node__204828119<PhotoId__38188305, Photo__977867310>;
+      var size : Nat__227979830
+    };
+  stable reports :
+    {
+      var root : Node__204828119<ReportId__327116113, Report__953667835>;
+      var size : Nat__227979830
+    };
+  stable state :
+    {var nextItemId : Nat; var nextPhotoId : Nat; var nextReportId : Nat}
+};

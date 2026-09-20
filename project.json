@@ -1,0 +1,19 @@
+{
+  "overview": "Aplikasi laporan inspeksi kendaraan untuk bengkel: catat kondisi tiap part, foto, ketersediaan dan harga part dalam Rupiah, lalu bagikan laporan via WhatsApp.",
+  "features": [
+    "Checklist kondisi part dengan catatan mekanik dan foto dari kamera atau galeri",
+    "Input ketersediaan dan harga part dalam Rupiah",
+    "Ringkasan hasil inspeksi dengan estimasi total biaya part",
+    "Riwayat laporan dengan pencarian, filter, dan pengurutan",
+    "Bagikan laporan langsung via WhatsApp"
+  ],
+  "category": "productivity",
+  "tags": [
+    "bengkel",
+    "inspeksi",
+    "kendaraan",
+    "laporan",
+    "workshop"
+  ],
+  "last_updated": "2026-09-20T03:24:23.580Z"
+}

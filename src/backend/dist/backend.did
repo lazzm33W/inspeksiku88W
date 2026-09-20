@@ -1,0 +1,212 @@
+type _ImmutableObjectStorageRefillResult = 
+ record {
+   success: opt bool;
+   topped_up_amount: opt nat;
+ };
+type _ImmutableObjectStorageRefillInformation = record {
+                                                  proposed_top_up_amount:
+                                                   opt nat;};
+type _ImmutableObjectStorageCreateCertificateResult = 
+ record {
+   blob_hash: text;
+   method: text;
+ };
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Timestamp = int;
+type Result__1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type ReportView = 
+ record {
+   createdAt: Timestamp;
+   id: ReportId;
+   inspectionDate: text;
+   items: vec InspectionItem;
+   plateNumber: text;
+   summary: ReportSummary;
+   updatedAt: Timestamp;
+   vehicleName: text;
+   year: nat;
+ };
+type ReportSummary = 
+ record {
+   attentionCount: nat;
+   estimatedPartCost: nat;
+   okCount: nat;
+   replaceCount: nat;
+   totalItems: nat;
+ };
+type ReportSort = 
+ variant {
+   newestFirst;
+   oldestFirst;
+ };
+type ReportListItem = 
+ record {
+   createdAt: Timestamp;
+   id: ReportId;
+   inspectionDate: text;
+   plateNumber: text;
+   summary: ReportSummary;
+   updatedAt: Timestamp;
+   vehicleName: text;
+   year: nat;
+ };
+type ReportInput = 
+ record {
+   inspectionDate: text;
+   plateNumber: text;
+   vehicleName: text;
+   year: nat;
+ };
+type ReportId = nat;
+type ReportFilter = 
+ variant {
+   all;
+   hasAttention;
+   hasReplace;
+ };
+type PhotoInput = 
+ record {
+   "blob": ExternalBlob;
+   filename: text;
+   mimeType: text;
+ };
+type PhotoId = nat;
+type Photo = 
+ record {
+   "blob": ExternalBlob;
+   filename: text;
+   id: PhotoId;
+   mimeType: text;
+ };
+type PartInfo = 
+ record {
+   availability: PartAvailability;
+   name: text;
+   price: nat;
+ };
+type PartAvailability = 
+ variant {
+   available;
+   order;
+   unavailable;
+ };
+type ItemStatus = 
+ variant {
+   attention;
+   ok;
+   replace;
+ };
+type ItemInput = 
+ record {
+   category: text;
+   name: text;
+   note: text;
+   part: opt PartInfo;
+   status: ItemStatus;
+ };
+type ItemId = nat;
+type InspectionItem = 
+ record {
+   category: text;
+   id: ItemId;
+   name: text;
+   note: text;
+   part: opt PartInfo;
+   status: ItemStatus;
+ };
+type ExternalBlob = blob;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+service : {
+  _immutableObjectStorageBlobsAreLive: (hashes: vec blob) -> (vec bool) query;
+  _immutableObjectStorageBlobsToDelete: () -> (vec blob) query;
+  _immutableObjectStorageConfirmBlobDeletion: (blobs: vec blob) -> ();
+  _immutableObjectStorageCreateCertificate: (blobHash: text) ->
+   (_ImmutableObjectStorageCreateCertificateResult);
+  _immutableObjectStorageRefillCashier: (refillInformation:
+   opt _ImmutableObjectStorageRefillInformation) ->
+   (_ImmutableObjectStorageRefillResult);
+  _immutableObjectStorageUpdateGatewayPrincipals: () -> ();
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result__1);
+  _internet_identity_sign_in_start: () -> (blob);
+  /// Add an inspection item to a report. Returns the new item id.
+  addItem: (reportId: ReportId, input: ItemInput) -> (opt ItemId);
+  /// Attach a photo to an inspection item. Returns the new photo id.
+  addPhoto: (reportId: ReportId, itemId: ItemId, input: PhotoInput) ->
+   (opt PhotoId);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  /// Create a new report and return its id.
+  createReport: (input: ReportInput) -> (ReportId);
+  /// Remove an inspection item from a report. Returns false when not found.
+  deleteItem: (reportId: ReportId, itemId: ItemId) -> (bool);
+  /// Remove a photo from an inspection item. Returns false when not found.
+  deletePhoto: (reportId: ReportId, itemId: ItemId, photoId: PhotoId) ->
+   (bool);
+  /// Delete a report and all of its items and photos.
+  deleteReport: (id: ReportId) -> (bool);
+  execute: (qJson: text) -> (Result) query;
+  getCallerUserRole: () -> (UserRole) query;
+  /// Fetch a single report with its items and derived summary.
+  getReport: (id: ReportId) -> (opt ReportView) query;
+  isCallerAdmin: () -> (bool) query;
+  /// List the photos attached to an inspection item.
+  listPhotos: (reportId: ReportId, itemId: ItemId) -> (vec Photo) query;
+  /// List reports, newest first, optionally filtered by search term and status.
+  listReports: (searchTerm: text, filter: ReportFilter, sort: ReportSort) ->
+   (vec ReportListItem) query;
+  schema: () -> (text) query;
+  /// Replace an inspection item's fields. Returns false when not found.
+  updateItem: (reportId: ReportId, itemId: ItemId, input: ItemInput) ->
+   (bool);
+  /// Update a report header. Returns false when the report does not exist.
+  updateReport: (id: ReportId, input: ReportInput) -> (bool);
+}
